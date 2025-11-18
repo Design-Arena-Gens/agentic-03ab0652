@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Accounting - Smart Finance Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="container">
+                <div class="auth-card">
+                    <h1>AI Accounting</h1>
+                    <p class="subtitle">Smart Finance Management</p>
+                    <div id="login-form">
+                        <input type="text" id="login-firm-id" placeholder="Firm ID" required>
+                        <input type="password" id="login-pin" placeholder="4-Digit PIN" maxlength="4" required>
+                        <button onclick="login()" class="btn-primary">Login</button>
+                        <button onclick="showRegistration()" class="btn-secondary">Register New Firm</button>
+                        <a href="#" onclick="showPasswordReset()" class="link">Forgot PIN?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Screen -->
+        <div id="registration-screen" class="screen">
+            <div class="container">
+                <div class="auth-card">
+                    <h2>Register Your Firm</h2>
+                    <form id="registration-form" onsubmit="register(event)">
+                        <div class="form-section">
+                            <h3>Organization Details</h3>
+                            <input type="text" id="firm-name" placeholder="Firm Name" required>
+                            <input type="text" id="firm-address" placeholder="Address" required>
+                            <input type="tel" id="firm-phone" placeholder="Phone" required>
+                            <input type="email" id="firm-email" placeholder="Email" required>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Taxation & GST Details</h3>
+                            <input type="text" id="gstin" placeholder="GSTIN" required>
+                            <input type="text" id="pan" placeholder="PAN" required>
+                            <select id="tax-regime" required>
+                                <option value="">Select Tax Regime</option>
+                                <option value="regular">Regular</option>
+                                <option value="composition">Composition</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Banking Information</h3>
+                            <input type="text" id="bank-name" placeholder="Bank Name" required>
+                            <input type="text" id="account-number" placeholder="Account Number" required>
+                            <input type="text" id="ifsc" placeholder="IFSC Code" required>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Security Setup</h3>
+                            <input type="password" id="pin" placeholder="Set 4-Digit PIN" maxlength="4" required>
+                            <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" required>
+
+                            <select id="security-q1" required>
+                                <option value="">Security Question 1</option>
+                                <option value="mother">Mother's maiden name?</option>
+                                <option value="pet">First pet's name?</option>
+                                <option value="school">First school name?</option>
+                            </select>
+                            <input type="text" id="security-a1" placeholder="Answer 1" required>
+
+                            <select id="security-q2" required>
+                                <option value="">Security Question 2</option>
+                                <option value="city">City of birth?</option>
+                                <option value="teacher">Favorite teacher?</option>
+                                <option value="book">Favorite book?</option>
+                            </select>
+                            <input type="text" id="security-a2" placeholder="Answer 2" required>
+
+                            <select id="security-q3" required>
+                                <option value="">Security Question 3</option>
+                                <option value="food">Favorite food?</option>
+                                <option value="car">First car?</option>
+                                <option value="friend">Best friend's name?</option>
+                            </select>
+                            <input type="text" id="security-a3" placeholder="Answer 3" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Register</button>
+                        <button type="button" onclick="showLogin()" class="btn-secondary">Back to Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Reset Screen -->
+        <div id="reset-screen" class="screen">
+            <div class="container">
+                <div class="auth-card">
+                    <h2>Reset PIN</h2>
+                    <form id="reset-form" onsubmit="resetPassword(event)">
+                        <input type="text" id="reset-firm-id" placeholder="Firm ID" required>
+                        <div id="security-questions"></div>
+                        <button type="submit" class="btn-primary">Verify & Reset</button>
+                        <button type="button" onclick="showLogin()" class="btn-secondary">Back to Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">AI Accounting</div>
+                <div class="nav-firm" id="nav-firm-name"></div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard()">Dashboard</a>
+                    <a href="#" onclick="showJournal()">Journal</a>
+                    <a href="#" onclick="showInventory()">Inventory</a>
+                    <a href="#" onclick="showInvoicing()">Invoicing</a>
+                    <a href="#" onclick="showReports()">Reports</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+
+            <div class="dashboard-content">
+                <h2>Dashboard</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Sales</h3>
+                        <p class="stat-value" id="stat-sales">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Revenue</h3>
+                        <p class="stat-value" id="stat-revenue">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tax Due</h3>
+                        <p class="stat-value" id="stat-tax">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Expenses</h3>
+                        <p class="stat-value" id="stat-expenses">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Purchases</h3>
+                        <p class="stat-value" id="stat-purchases">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Inventory Cost</h3>
+                        <p class="stat-value" id="stat-inventory">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Capital</h3>
+                        <p class="stat-value" id="stat-capital">₹0</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Sales & Revenue Trend</h3>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Expense Breakdown</h3>
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Journal Screen -->
+        <div id="journal-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">AI Accounting</div>
+                <div class="nav-firm" id="nav-firm-name-journal"></div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard()">Dashboard</a>
+                    <a href="#" onclick="showJournal()">Journal</a>
+                    <a href="#" onclick="showInventory()">Inventory</a>
+                    <a href="#" onclick="showInvoicing()">Invoicing</a>
+                    <a href="#" onclick="showReports()">Reports</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+
+            <div class="content">
+                <h2>Journal Entries</h2>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchJournalTab('manual')">Manual Entry</button>
+                    <button class="tab" onclick="switchJournalTab('smart')">Smart Entry</button>
+                </div>
+
+                <div id="manual-entry" class="tab-content active">
+                    <form onsubmit="addManualEntry(event)">
+                        <input type="date" id="manual-date" required>
+                        <input type="text" id="manual-particulars" placeholder="Particulars" required>
+                        <input type="number" id="manual-debit" placeholder="Debit Amount" step="0.01">
+                        <input type="number" id="manual-credit" placeholder="Credit Amount" step="0.01">
+                        <textarea id="manual-narration" placeholder="Narration" rows="2"></textarea>
+                        <button type="submit" class="btn-primary">Add Entry</button>
+                    </form>
+                </div>
+
+                <div id="smart-entry" class="tab-content">
+                    <form onsubmit="addSmartEntry(event)">
+                        <input type="date" id="smart-date" required>
+                        <input type="number" id="smart-amount" placeholder="Amount" step="0.01" required>
+                        <input type="number" id="smart-quantity" placeholder="Stock Quantity (if applicable)" step="1">
+                        <input type="number" id="smart-price" placeholder="Price per unit (if applicable)" step="0.01">
+                        <textarea id="smart-narration" placeholder="Describe transaction in English, Hinglish, or Hindi (e.g., 'goods sold to A', 'A ko maal becha')" rows="3" required></textarea>
+                        <button type="submit" class="btn-primary">Generate Entry</button>
+                    </form>
+                </div>
+
+                <div class="journal-list">
+                    <h3>Recent Entries</h3>
+                    <table id="journal-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Particulars</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Narration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journal-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Screen -->
+        <div id="inventory-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">AI Accounting</div>
+                <div class="nav-firm" id="nav-firm-name-inventory"></div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard()">Dashboard</a>
+                    <a href="#" onclick="showJournal()">Journal</a>
+                    <a href="#" onclick="showInventory()">Inventory</a>
+                    <a href="#" onclick="showInvoicing()">Invoicing</a>
+                    <a href="#" onclick="showReports()">Reports</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+
+            <div class="content">
+                <h2>Inventory Management</h2>
+                <button onclick="showAddInventory()" class="btn-primary">Add New Item</button>
+
+                <div id="add-inventory-form" class="form-card" style="display:none;">
+                    <h3>Add Inventory Item</h3>
+                    <form onsubmit="addInventoryItem(event)">
+                        <input type="text" id="inv-name" placeholder="Item Name" required>
+                        <input type="text" id="inv-supplier" placeholder="Supplier Name" required>
+                        <input type="text" id="inv-invoice" placeholder="Invoice Number" required>
+                        <input type="number" id="inv-purchase-cost" placeholder="Purchase Cost per Unit" step="0.01" required>
+                        <input type="number" id="inv-sales-price" placeholder="Sales Price per Unit" step="0.01" required>
+                        <input type="text" id="inv-hsn" placeholder="HSN Code" required>
+                        <input type="number" id="inv-gst" placeholder="GST Percentage" step="0.01" required>
+                        <input type="number" id="inv-quantity" placeholder="Quantity" step="1" required>
+                        <button type="submit" class="btn-primary">Add Item</button>
+                        <button type="button" onclick="hideAddInventory()" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+
+                <div class="inventory-list">
+                    <table id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Supplier</th>
+                                <th>Purchase Cost</th>
+                                <th>Sales Price</th>
+                                <th>HSN Code</th>
+                                <th>GST %</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoicing Screen -->
+        <div id="invoicing-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">AI Accounting</div>
+                <div class="nav-firm" id="nav-firm-name-invoicing"></div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard()">Dashboard</a>
+                    <a href="#" onclick="showJournal()">Journal</a>
+                    <a href="#" onclick="showInventory()">Inventory</a>
+                    <a href="#" onclick="showInvoicing()">Invoicing</a>
+                    <a href="#" onclick="showReports()">Reports</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+
+            <div class="content">
+                <h2>Invoicing</h2>
+                <button onclick="showCreateInvoice()" class="btn-primary">Create New Invoice</button>
+
+                <div id="create-invoice-form" class="form-card" style="display:none;">
+                    <h3>Create Invoice</h3>
+                    <form onsubmit="createInvoice(event)">
+                        <input type="text" id="invoice-customer-name" placeholder="Customer Name" required>
+                        <input type="text" id="invoice-customer-address" placeholder="Customer Address" required>
+                        <input type="text" id="invoice-customer-gstin" placeholder="Customer GSTIN (optional)">
+                        <input type="date" id="invoice-date" required>
+
+                        <div id="invoice-items">
+                            <h4>Items</h4>
+                            <div class="invoice-item">
+                                <select class="invoice-item-select" required>
+                                    <option value="">Select Item</option>
+                                </select>
+                                <input type="number" class="invoice-item-qty" placeholder="Quantity" step="1" required>
+                                <button type="button" onclick="addInvoiceItem()" class="btn-small">+</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Generate Invoice</button>
+                        <button type="button" onclick="hideCreateInvoice()" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+
+                <div class="invoice-list">
+                    <h3>Invoice History</h3>
+                    <table id="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Screen -->
+        <div id="reports-screen" class="screen">
+            <nav class="navbar">
+                <div class="nav-brand">AI Accounting</div>
+                <div class="nav-firm" id="nav-firm-name-reports"></div>
+                <div class="nav-links">
+                    <a href="#" onclick="showDashboard()">Dashboard</a>
+                    <a href="#" onclick="showJournal()">Journal</a>
+                    <a href="#" onclick="showInventory()">Inventory</a>
+                    <a href="#" onclick="showInvoicing()">Invoicing</a>
+                    <a href="#" onclick="showReports()">Reports</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+
+            <div class="content">
+                <h2>Reports</h2>
+                <div class="reports-grid">
+                    <button onclick="generateReport('ledger')" class="report-btn">Ledger</button>
+                    <button onclick="generateReport('trial-balance')" class="report-btn">Trial Balance</button>
+                    <button onclick="generateReport('profit-loss')" class="report-btn">Profit & Loss</button>
+                    <button onclick="generateReport('balance-sheet')" class="report-btn">Balance Sheet</button>
+                    <button onclick="generateReport('cash-flow')" class="report-btn">Cash Flow</button>
+                    <button onclick="generateReport('gst-return')" class="report-btn">GST Return</button>
+                </div>
+
+                <div id="report-output" class="report-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
